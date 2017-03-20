@@ -25,6 +25,8 @@ yamlLoader_DBD += yamlLoader.dbd
 yamlLoader_SRCS += yamlLoader.cpp
 
 
+boost_DIR = $(BOOST_LIB)
+bsaDriver_LIBS += boost
 
 yaml-cpp_DIR += $(YAML_LIB)
 yamlLoader_LIBS += yaml-cpp
