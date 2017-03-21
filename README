@@ -3,11 +3,11 @@
 #  Name: README
 #
 #  Rem:  
-#        EPICS IOC Application 
+#        EPICS Driver
 #
 #  Side: None
 #
-#  Auth: XX-Mar-2012,          (XX)
+#  Auth: March 21, Kukhee Kim         (KHKIM)
 #  Rev:  dd-mmm-yyyy, Reviewer's Name (USERNAME)
 #--------------------------------------------------------------
 #  Mod:
@@ -16,9 +16,67 @@
 #
 #==============================================================
 #
-# NOTE:
-# Please do not type make here !!
-# This module is only a template used by makeBaseApp.pl to create an EPICS IOC Application
+PURPOSE
+
+The yamlLoader is an epics driver for the follwing purpose:
+1. Load hierarchy description yaml files
+2. Load register configuration yaml files
+3. Dump register configuration to yaml files
 
 
-# End of file
+BUILD
+
+The yamlLoader driver work with CPSW framework.
+It it requires the following API layers.
+
+	cpsw/framework
+	yaml-cpp
+	boost
+
+For building apllication, Makefile should include the following DBD file.
+
+	<your_application_name>_DBD += yamlLoader.dbd
+
+In source code, the yamlLoader driver provides "cpswGetRoot()" API
+to provide the root path for hierarchy.
+
+	ex) #include <yamlLoader.h>
+	    Application_init_with_rootPath(cpswGetRoot());
+
+
+USAGE for LOAD HIERARCHY
+
+cpswLoadYamlFile 'YAML hierarchy descrtiption file' 
+                 'Root Device Name (optional; default = 'root')' 
+                 'directory where YAML includes can be found (optional)' 
+                 'IP address for carrier board (orverride the IP address in YAML)'
+
+ex)
+	cd yamlConfig_0x000C                                                 ; change directory to a proper location
+	cpswLoadYamlFile("000TopLevel.yaml", "NetIODev", "", "10.0.3.105")   ; root is NetIODe and override IP address to 10.0.3.105
+
+
+
+
+USAGE for LOAD CONFIG
+
+cpswLoadConfigFile 'CONFIG YAML file (NOT hierarchy YAML!)' 
+                   'Path prefix (if config YAML is not based of the root device; optional)' 
+                   'directory where YAML includes can be found (optional)'
+
+ex)
+	cd ("${IOC_DATA}/vioc-b84-ev01/yamlConfig")
+	cpswLoadConfigFile("configDump.yaml", "mmio/AmcCarrierTimingGenerator/ApplicationCore/AmcGenericAdcDacCore", "")
+
+
+
+USAGE for DUMP CONFIG
+
+
+cpswDumpConfigFile 'DUMP YAML file (NOT hierarch YAML!)' 
+                   'Path prefix (if dump YAML is not based of the root device; optional)' 
+                   'directory where will be the DUMP YAML located (optional)'
+
+ex)
+	cd ("${IOC_DATA}/vioc-b84-ev01/yamlConfig")
+	cpswDumpConfigFile("dump.yaml", "mmio/AmcCarrierTimingGenerator/ApplicationCore/AmcGenericAdcDacCore" , ""
