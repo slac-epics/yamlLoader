@@ -137,7 +137,10 @@ static const iocshFuncDef loadYamlFuncDef = { "cpswLoadYamlFile", 4, loadYamlArg
 static void loadYamlCallFunc(const iocshArgBuf *args)
 {
     // cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir);
-    cpswLoadYamlFile(args[0].sval, args[1].sval, args[2].sval, args[3].sval);
+    cpswLoadYamlFile(args[0].sval, 
+                     args[1].sval, 
+                     strlen(args[2].sval)? args[2].sval : NULL, 
+                     strlen(args[3].sval)? args[3].sval : NULL);
     
 }
 
@@ -153,7 +156,9 @@ static const iocshFuncDef loadConfigFuncDef = { "cpswLoadConfigFile", 3, loadCon
 static void loadConfigCallFunc(const iocshArgBuf *args)
 {
     //cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir);
-    cpswLoadConfigFile(args[0].sval, args[1].sval, args[2].sval);
+    cpswLoadConfigFile(args[0].sval, 
+                       args[1].sval, 
+                       strlen(args[2].sval) ? args[2].sval : NULL);
 }
 
 static const iocshArg dumpConfigArg0 = {"DUMP YAML file (NOT hierarch YAML!)",                                  iocshArgString};
@@ -166,7 +171,9 @@ static const iocshFuncDef dumpConfigFuncDef = { "cpswDumpConfigFile", 3, dumpCon
 
 static void dumpConfigCallFunc(const iocshArgBuf *args)
 {
-    cpswDumpConfigFile(args[0].sval, args[1].sval, args[2].sval);
+    cpswDumpConfigFile(args[0].sval, 
+                       args[1].sval, 
+                       strlen(args[2].sval) ? args[2].sval : NULL);
 } 
 
 static void yamlLoaderRegister(void)
