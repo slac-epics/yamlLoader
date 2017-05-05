@@ -1,3 +1,7 @@
+R1.0.2          May 5, 2017
+                Null string exception for epics ioc shell (no argument or missing argument
+                Expose API functions to user
+                
 R1.0.1          April 5, 2017
                 Test yaml location directory and pass NULL if it is empty string
 
