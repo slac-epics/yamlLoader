@@ -30,14 +30,20 @@ extern "C" {
 // need to think more about the ugly global one
 static Path theRoot;
 
+
 Path cpswGetRoot(void)
 {
     return theRoot;
 }
 
+void cpswPutRoot(Path root)
+{
+    theRoot = root;
+}
 
 
-static int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir, const char *ip_addr)
+
+int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir, const char *ip_addr)
 {
     if(!yaml_file) {
         fprintf(stderr, "Missing YAML file name\n");
@@ -59,7 +65,7 @@ static int cpswLoadYamlFile(const char *yaml_file, const char *root, const char 
     return 0;
 }
 
-static int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir)
+int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir)
 {
     Path pre;
     
@@ -87,7 +93,7 @@ static int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const c
     return pre->loadConfigFromYamlFile(yaml_file, yaml_dir);
 }
 
-static int cpswDumpConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir)
+int cpswDumpConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir)
 {
     Path pre;
     
@@ -137,8 +143,8 @@ static const iocshFuncDef loadYamlFuncDef = { "cpswLoadYamlFile", 4, loadYamlArg
 static void loadYamlCallFunc(const iocshArgBuf *args)
 {
     // cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir);
-    cpswLoadYamlFile(args[0].sval, 
-                     args[1].sval, 
+    cpswLoadYamlFile(strlen(args[0].sval)? args[0].sval : NULL, 
+                     strlen(args[1].sval)? args[1].sval : NULL, 
                      strlen(args[2].sval)? args[2].sval : NULL, 
                      strlen(args[3].sval)? args[3].sval : NULL);
     
@@ -156,8 +162,8 @@ static const iocshFuncDef loadConfigFuncDef = { "cpswLoadConfigFile", 3, loadCon
 static void loadConfigCallFunc(const iocshArgBuf *args)
 {
     //cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir);
-    cpswLoadConfigFile(args[0].sval, 
-                       args[1].sval, 
+    cpswLoadConfigFile(strlen(args[0].sval) ? args[0].sval : NULL, 
+                       strlen(args[1].sval) ? args[1].sval : NULL, 
                        strlen(args[2].sval) ? args[2].sval : NULL);
 }
 
@@ -171,8 +177,8 @@ static const iocshFuncDef dumpConfigFuncDef = { "cpswDumpConfigFile", 3, dumpCon
 
 static void dumpConfigCallFunc(const iocshArgBuf *args)
 {
-    cpswDumpConfigFile(args[0].sval, 
-                       args[1].sval, 
+    cpswDumpConfigFile(strlen(args[0].sval) ? args[0].sval : NULL, 
+                       strlen(args[1].sval) ? args[1].sval : NULL, 
                        strlen(args[2].sval) ? args[2].sval : NULL);
 } 
 
