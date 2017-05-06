@@ -143,16 +143,16 @@ static const iocshFuncDef loadYamlFuncDef = { "cpswLoadYamlFile", 4, loadYamlArg
 static void loadYamlCallFunc(const iocshArgBuf *args)
 {
     // cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir);
-    if(!strlen(args[0].sval)) {
+    if(!args[0].sval ||!strlen(args[0].sval)) {
         printf("Missing YAML HIERARCHY file name\n");
         printf("Please, try \"help cpswLoadYamlLoadFile\" to get more information\n");
         return;
     }
 
-    cpswLoadYamlFile(strlen(args[0].sval)? args[0].sval : NULL, 
-                     strlen(args[1].sval)? args[1].sval : NULL, 
-                     strlen(args[2].sval)? args[2].sval : NULL, 
-                     strlen(args[3].sval)? args[3].sval : NULL);
+    cpswLoadYamlFile((args[0].sval && strlen(args[0].sval))? args[0].sval : NULL, 
+                     (args[1].sval && strlen(args[1].sval))? args[1].sval : NULL, 
+                     (args[2].sval && strlen(args[2].sval))? args[2].sval : NULL, 
+                     (args[3].sval && strlen(args[3].sval))? args[3].sval : NULL);
     
 }
 
@@ -168,15 +168,15 @@ static const iocshFuncDef loadConfigFuncDef = { "cpswLoadConfigFile", 3, loadCon
 static void loadConfigCallFunc(const iocshArgBuf *args)
 {
     //cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir);
-    if(!strlen(args[0].sval)) {
+    if(!args[0].sval || !strlen(args[0].sval)) {
         printf("Missing YAML CONFIG file name argument\n");
         printf("Please, try \"help cpswLoadConfigFile\" to get more information\n");
         return;
     }
     
-    cpswLoadConfigFile(strlen(args[0].sval) ? args[0].sval : NULL, 
-                       strlen(args[1].sval) ? args[1].sval : NULL, 
-                       strlen(args[2].sval) ? args[2].sval : NULL);
+    cpswLoadConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
+                       (args[1].sval && strlen(args[1].sval)) ? args[1].sval : NULL, 
+                       (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL);
 }
 
 static const iocshArg dumpConfigArg0 = {"DUMP YAML file (NOT hierarch YAML!)",                                  iocshArgString};
@@ -192,15 +192,15 @@ static void dumpConfigCallFunc(const iocshArgBuf *args)
 
     /* coswDumpConfigFile( const char *yaml_file, const char *prefix, const char *yaml_dir) */
     
-    if(!strlen(args[0].sval)) {
+    if(!args[0].sval || !strlen(args[0].sval)) {
         printf("Missing YAML CONFIG file name argument\n");
         printf("Please, try \"help cpswDumpConfigFile\" to get more information\n");
         return;
     }
     
-    cpswDumpConfigFile(strlen(args[0].sval) ? args[0].sval : NULL, 
-                       strlen(args[1].sval) ? args[1].sval : NULL, 
-                       strlen(args[2].sval) ? args[2].sval : NULL);
+    cpswDumpConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
+                       (args[1].sval && strlen(args[1].sval)) ? args[1].sval : NULL, 
+                       (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL);
 } 
 
 static void yamlLoaderRegister(void)
