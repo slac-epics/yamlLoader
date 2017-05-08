@@ -1,5 +1,8 @@
+R1.0.3          May 8, 2017
+                Build against cpsw R3.5.4
+
 R1.0.2          May 5, 2017
-                Null string exception for epics ioc shell (no argument or missing argument
+                Null string exception for epics ioc shell (no argument or missing argument)
                 Expose API functions to user
                 
 R1.0.1          April 5, 2017
