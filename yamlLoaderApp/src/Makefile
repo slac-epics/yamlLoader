@@ -2,18 +2,17 @@ TOP=../..
 
 include $(TOP)/configure/CONFIG
 
-USR_CXXFLAGS += -std=c++0x
 USR_CXXFLAGS += -DHAVE_YAML
 
 #----------------------------------------
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #========================================
 
-INCLUDES += -I$(YAML_INCLUDE)
-INCLUDES += -I$(BOOST_INCLUDE)
+INCLUDES += $(addprefix -I,$(YAML_INCLUDE))
+INCLUDES += $(addprefix -I,$(BOOST_INCLUDE))
 
 ## this part is just for yaml loader driver
-INCLUDES += -I$(CPSW_FRAMEWORK_INCLUDE)
+INCLUDES += $(addprefix -I,$(CPSW_FRAMEWORK_INCLUDE))
 
 INC += yamlLoader.h
 DBD += yamlLoader.dbd
