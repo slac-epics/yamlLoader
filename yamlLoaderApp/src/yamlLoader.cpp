@@ -15,9 +15,9 @@
 class IYamlSetIP : public IYamlFixup {
 public:
         IYamlSetIP( const char* ip_addr ) : ip_addr_(ip_addr) {}
-        virtual void operator()(YAML::Node &node)
+        virtual void operator()(YAML::Node &root, YAML::Node &top)
         {
-          node["ipAddr"] = ip_addr_;
+          root["ipAddr"] = ip_addr_;
         }
 
         virtual ~IYamlSetIP() {}
