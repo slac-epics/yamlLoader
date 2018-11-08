@@ -1,1 +1,16 @@
+bin/
+lib/
+include/
+db/
+O.*/
+dbd/
+startup/
+cfg/
+*~
+.*
+*.swp
+*.log
+*.bak
 RELEASE_SITE
+display/
+restore/
