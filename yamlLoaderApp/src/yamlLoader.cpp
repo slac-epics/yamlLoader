@@ -110,7 +110,7 @@ void cpswPutNamedRoot(Path root, const char *name)
 
 
 
-int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir, const char *ip_addr)
+int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir, const char *ip_addr, const char *named_root)
 {
     Path theRoot;
 
@@ -126,7 +126,8 @@ int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_d
               theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setIP);
         }
 
-        cpswPutRoot(theRoot);
+        if(!named_root || !strlen(named_root)) cpswPutRoot(theRoot);
+        else                                   cpswPutNamedRoot(theRoot, named_root);
         
     } catch (CPSWError &e) {
         fprintf(stderr, "Unable to load YAML file: %s\n", e.getInfo().c_str());
@@ -137,7 +138,7 @@ int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_d
     return 0;
 }
 
-int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir)
+int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir, const char *named_root)
 {
     Path pre;
     
@@ -152,7 +153,7 @@ int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *ya
     }
     
     try {
-        Path theRoot = cpswGetRoot();
+        Path theRoot = (!named_root || !strlen(named_root))? cpswGetRoot(): cpswGetNamedRoot(named_root);
         pre = prefix ? theRoot->findByName(prefix) : theRoot;
     } catch (CPSWError &e) {
         fprintf(stderr, "Unable to load CONFIG file: %s\n", e.getInfo().c_str());
@@ -166,7 +167,7 @@ int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *ya
     return pre->loadConfigFromYamlFile(yaml_file, yaml_dir);
 }
 
-int cpswDumpConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir)
+int cpswDumpConfigFile(const char *yaml_file, const char *prefix, const char *yaml_dir, const char *named_root)
 {
     Path pre;
     
@@ -181,7 +182,7 @@ int cpswDumpConfigFile(const char *yaml_file, const char *prefix, const char *ya
     }
     
     try {
-        Path theRoot = cpswGetRoot();
+        Path theRoot = (!named_root || !strlen(named_root))? cpswGetRoot(): cpswGetNamedRoot(named_root);
         pre = prefix ? theRoot->findByName(prefix) : theRoot;
     } catch (CPSWError &e) {
         fprintf(stderr, "Unable to dump Config file: %s\n", e.getInfo().c_str());
@@ -208,11 +209,13 @@ static const iocshArg loadYamlArg0   = {"YAML hierarchy descrtiption file",     
 static const iocshArg loadYamlArg1   = {"Root Device Name (optional; default = 'root')",                           iocshArgString};
 static const iocshArg loadYamlArg2   = {"directory where YAML includes can be found (optional)",                   iocshArgString};
 static const iocshArg loadYamlArg3   = {"IP address for carrier board (orverride the IP address in YAML)",         iocshArgString};
+static const iocshArg loadYamlArg4   = {"Named Root - base name for multiple roots extension (optional)",          iocshArgString};
 static const iocshArg * const loadYamlArgs[] = { &loadYamlArg0,
                                                  &loadYamlArg1,
                                                  &loadYamlArg2,
-                                                 &loadYamlArg3 };
-static const iocshFuncDef loadYamlFuncDef = { "cpswLoadYamlFile", 4, loadYamlArgs };
+                                                 &loadYamlArg3,
+                                                 &loadYamlArg4 };
+static const iocshFuncDef loadYamlFuncDef = { "cpswLoadYamlFile", 5, loadYamlArgs };
 
 static void loadYamlCallFunc(const iocshArgBuf *args)
 {
@@ -226,18 +229,21 @@ static void loadYamlCallFunc(const iocshArgBuf *args)
     cpswLoadYamlFile((args[0].sval && strlen(args[0].sval))? args[0].sval : NULL, 
                      (args[1].sval && strlen(args[1].sval))? args[1].sval : NULL, 
                      (args[2].sval && strlen(args[2].sval))? args[2].sval : NULL, 
-                     (args[3].sval && strlen(args[3].sval))? args[3].sval : NULL);
+                     (args[3].sval && strlen(args[3].sval))? args[3].sval : NULL,
+                     (args[4].sval && strlen(args[4].sval))? args[4].sval : NULL);
     
 }
 
 
 static const iocshArg loadConfigArg0 = {"CONFIG YAML file (NOT hierarchy YAML!)",                                  iocshArgString};
-static const iocshArg loadConfigArg1 = {"Path prefix (if config YAML is not based of the root device; optional)", iocshArgString};
+static const iocshArg loadConfigArg1 = {"Path prefix (if config YAML is not based of the root device; optional)",  iocshArgString};
 static const iocshArg loadConfigArg2 = {"directory where YAML includes can be found (optional)",                   iocshArgString};
+static const iocshArg loadConfigArg3 = {"Named Root - base name for multiple roots extension (optional)",          iocshArgString};
 static const iocshArg * const loadConfigArgs[] = { &loadConfigArg0,
                                                    &loadConfigArg1,
-                                                   &loadConfigArg2 };
-static const iocshFuncDef loadConfigFuncDef = { "cpswLoadConfigFile", 3, loadConfigArgs };
+                                                   &loadConfigArg2,
+                                                   &loadConfigArg3 };
+static const iocshFuncDef loadConfigFuncDef = { "cpswLoadConfigFile", 4, loadConfigArgs };
 
 static void loadConfigCallFunc(const iocshArgBuf *args)
 {
@@ -250,16 +256,19 @@ static void loadConfigCallFunc(const iocshArgBuf *args)
     
     cpswLoadConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
                        (args[1].sval && strlen(args[1].sval)) ? args[1].sval : NULL, 
-                       (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL);
+                       (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL,
+                       (args[3].sval && strlen(args[3].sval)) ? args[3].sval : NULL);
 }
 
 static const iocshArg dumpConfigArg0 = {"DUMP YAML file (NOT hierarch YAML!)",                                  iocshArgString};
 static const iocshArg dumpConfigArg1 = {"Path prefix (if dump YAML is not based of the root device; optional)", iocshArgString};
 static const iocshArg dumpConfigArg2 = {"directory where will be the DUMP YAML located (optional)",             iocshArgString};
+static const iocshArg dumpConfigArg3 = {"Named Root - base name for multiple roots extension (optional)",       iocshArgString};
 static const iocshArg * const dumpConfigArgs[] = { &dumpConfigArg0,
                                                    &dumpConfigArg1,
-                                                   &dumpConfigArg2 };
-static const iocshFuncDef dumpConfigFuncDef = { "cpswDumpConfigFile", 3, dumpConfigArgs };
+                                                   &dumpConfigArg2,
+                                                   &dumpConfigArg3 };
+static const iocshFuncDef dumpConfigFuncDef = { "cpswDumpConfigFile", 4, dumpConfigArgs };
 
 static void dumpConfigCallFunc(const iocshArgBuf *args)
 {
@@ -274,7 +283,8 @@ static void dumpConfigCallFunc(const iocshArgBuf *args)
     
     cpswDumpConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
                        (args[1].sval && strlen(args[1].sval)) ? args[1].sval : NULL, 
-                       (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL);
+                       (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL,
+                       (args[3].sval && strlen(args[3].sval)) ? args[3].sval : NULL);
 } 
 
 static void yamlLoaderRegister(void)
