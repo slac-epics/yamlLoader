@@ -1,3 +1,6 @@
+R1.1.6         Nov. 20, 2019
+               Support multiple ATCA blades (backward-compatible)
+
 R1.1.5         Oct. 28, 2019
                build with cpsw/framework R4.3.1
 
