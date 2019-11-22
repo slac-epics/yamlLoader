@@ -9,6 +9,7 @@ extern "C" {
 
 int cpswIsThereRoot(void);
 Path cpswGetRoot(void);
+char * cpswGetRootName(void);
 void cpswPutRoot(Path root);
 Path cpswGetNamedRoot(const char *named_root);
 void cpswPutNamedRoot(Path root, const char *named_root);
