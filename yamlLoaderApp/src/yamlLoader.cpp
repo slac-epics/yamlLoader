@@ -60,10 +60,12 @@ Path cpswGetRoot(void)
 {
     init_rootList();
     rootList_t *p = NULL;
-    if(ellCount(pRootList)) p = (rootList_t *) ellLast(pRootList);
-   
-    
-    return p->root;
+    if(ellCount(pRootList)) {
+        p = (rootList_t *) ellLast(pRootList);
+        return p->root;
+    }
+
+    return IPath::create();   /* return empty root */
 }
 
 char * cpswGetRootName(void)
@@ -90,7 +92,9 @@ Path cpswGetNamedRoot(const char *name)
         p = (rootList_t *) ellNext(&p->node);
     }
 
-    return p->root;
+    if(p) return p->root;
+
+    return IPath::create();    /* return empty root */
 }
 
 void cpswPutRoot(Path root)
