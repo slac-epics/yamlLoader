@@ -79,4 +79,21 @@ cpswDumpConfigFile 'DUMP YAML file (NOT hierarch YAML!)'
 
 ex)
 	cd ("${IOC_DATA}/vioc-b84-ev01/yamlConfig")
-	cpswDumpConfigFile("dump.yaml", "mmio/AmcCarrierTimingGenerator/ApplicationCore/AmcGenericAdcDacCore" , ""
+	cpswDumpConfigFile("dump.yaml", "mmio/AmcCarrierTimingGenerator/ApplicationCore/AmcGenericAdcDacCore" , "")
+
+
+USAGE for MULTIPLE BLADE IN A SINGLE IOC
+There are additional argument to describe "named_root" which is an identifier for multiple root.
+ex)
+	cd  ${YAML_DIR0}
+	cpswLoadYamlFile("000TopLevel.yaml", "NetIODev", "", "10.0.3.102", "root_slot2")
+	cd  ${YAML_DIR1}
+	cpswLoadYamlFile("000TopLevel.yaml", "NetIODev", "", "10.0.3.103", "root_slot3")
+	cd  ${YAML_DIR2}
+	cpswLoadYamlFile("000TopLevel.yaml", "NetIODev", "", "10.0.3.104", "root_slot4")
+
+Application driver can get root path with the following API calls
+
+Path root = cpswGetRoot();     # root path from  very last cpswLoadYamlFile() command, in this exampl, it should give root path for "root_slot4"
+Path root = cpswGetNamedRoot("root_slot3")  # gives root path for "root_slot3"
+char *named_root = cpswGetRootName();   # gives root name for very last cpswLoadYamlFile() command, in this example, it should return a string "root_slot4"
