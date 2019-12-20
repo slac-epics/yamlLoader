@@ -86,7 +86,7 @@ char * cpswGetRootName(void)
 
 Path cpswGetNamedRoot(const char *name)
 {
-    int rootList();
+    init_rootList();
 
     rootList_t *p = (rootList_t *) ellFirst(pRootList);
     while(p) {
