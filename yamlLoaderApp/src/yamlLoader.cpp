@@ -15,6 +15,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+static Path _null_path;
+
 class IYamlSetIP : public IYamlFixup {
 public:
         IYamlSetIP( const char* ip_addr ) : ip_addr_(ip_addr) {}
@@ -65,7 +67,7 @@ Path cpswGetRoot(void)
         return p->root;
     }
 
-    return IPath::create();   /* return empty root */
+    return _null_path;
 }
 
 char * cpswGetRootName(void)
@@ -94,7 +96,7 @@ Path cpswGetNamedRoot(const char *name)
 
     if(p) return p->root;
 
-    return IPath::create();    /* return empty root */
+    return _null_path;
 }
 
 void cpswPutRoot(Path root)
