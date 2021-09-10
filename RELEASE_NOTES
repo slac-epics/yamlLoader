@@ -1,3 +1,7 @@
+R2.2.0         Sep 11, 2021
+               allow to override device file name for MemDev
+               backward compatible for overriding IP address for NetIoDev
+
 R2.1.0         Jan 29, 2020
                build against cpsw/framework R4.4.1 and buildroot-2019.08
 

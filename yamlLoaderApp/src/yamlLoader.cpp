@@ -30,6 +30,20 @@ private:
         std::string ip_addr_;
 };
 
+class IYamlSetFileName : public IYamlFixup {
+public:
+        IYamlSetFileName( const char * file_name) : file_name_(file_name) {}
+        virtual void operator() (YAML::Node &node, YAML::Node &dummy)
+        {
+            node["fileName"] = file_name_;
+        }
+
+        virtual ~IYamlSetFileName() {}
+
+private:
+        std::string file_name_;
+};
+
 
 extern "C" {
 // need to think more about the ugly global one
@@ -142,8 +156,17 @@ int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_d
     try {
         if(!ip_addr) theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir);
         else {
-              IYamlSetIP setIP(ip_addr);
-              theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setIP);
+              if(!strcmp(root, "NetIoDev")) {   // root type is NetIoDev
+                  IYamlSetIP setIP(ip_addr);
+                  theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setIP);
+              } else if (!strcmp(root, "MemDev")) {
+                  IYamlSetFileName setFileName(ip_addr);
+                  theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setFileName);
+              } else {
+                  fprintf(stderr, "The root type should be NetIoDev or MemDev\n");
+                  return -1;
+              }
+   
         }
 
         if(!named_root || !strlen(named_root)) cpswPutRoot(theRoot);
