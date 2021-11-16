@@ -156,14 +156,14 @@ int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_d
     try {
         if(!ip_addr) theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir);
         else {
-              if(!strcmp(root, "NetIoDev")) {   // root type is NetIoDev
+              if(!strcmp(root, "NetIODev")) {   // root type is NetIODev
                   IYamlSetIP setIP(ip_addr);
                   theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setIP);
               } else if (!strcmp(root, "MemDev")) {
                   IYamlSetFileName setFileName(ip_addr);
                   theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setFileName);
               } else {
-                  fprintf(stderr, "The root type should be NetIoDev or MemDev\n");
+                  fprintf(stderr, "The root type should be NetIODev or MemDev\n");
                   return -1;
               }
    
