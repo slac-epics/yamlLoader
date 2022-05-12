@@ -1,3 +1,6 @@
+R2.1.0 - 1.0   May 12, 2022
+               Update CONFIG_SITE to host-version-invariant, add support for RHEL7
+
 R2.1.0         Jan 29, 2020
                build against cpsw/framework R4.4.1 and buildroot-2019.08
 
