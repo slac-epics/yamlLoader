@@ -113,6 +113,21 @@ Path cpswGetNamedRoot(const char *name)
     return _null_path;
 }
 
+char* cpswGetDescofNamedRoot(const char *name)
+{
+    init_rootList();
+
+    rootList_t *p = (rootList_t *) ellFirst(pRootList);
+    while(p) {
+        if(!strcmp(p->name, name)) break;
+        p = (rootList_t *) ellNext(&p->node);
+    }
+
+    if(p) return p->description;
+
+    return (char*) NULL;
+}
+
 void cpswPutRoot(Path root)
 {
     init_rootList();
@@ -122,6 +137,7 @@ void cpswPutRoot(Path root)
     rootList_t *p = (rootList_t*) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
     p->name = epicsStrDup(name);
     p->root = root;
+    p->description = NULL;
 
     ellAdd(pRootList, &p->node);
     
@@ -135,18 +151,29 @@ void cpswPutNamedRoot(Path root, const char *name)
     rootList_t *p = (rootList_t *) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
     p->name = epicsStrDup(name);
     p->root = root;
+    p->description = NULL;
 
     ellAdd(pRootList, &p->node);
 
 }
 
+void cpswPutNamedRootwithDesc(Path root, const char *desc, const char *name)
+{
+    init_rootList();
 
+    rootList_t *p = (rootList_t *) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
+    p->name = epicsStrDup(name);
+    p->root = root;
+    p->description = epicsStrDup(desc);
 
+    ellAdd(pRootList, &p->node);
+}
 
 
 int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_dir, const char *ip_addr, const char *named_root)
 {
     Path theRoot;
+    char *dev_file_path = NULL;
 
     if(!yaml_file) {
         fprintf(stderr, "Missing YAML file name\n");
@@ -160,7 +187,8 @@ int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_d
                   IYamlSetIP setIP(ip_addr);
                   theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setIP);
               } else if (!strcmp(root, "MemDev")) {
-                  IYamlSetFileName setFileName(ip_addr);
+                  dev_file_path = (char *)ip_addr;
+                  IYamlSetFileName setFileName(dev_file_path);
                   theRoot = IPath::loadYamlFile(yaml_file, root, yaml_dir, &setFileName);
               } else {
                   fprintf(stderr, "The root type should be NetIODev or MemDev\n");
@@ -170,7 +198,10 @@ int cpswLoadYamlFile(const char *yaml_file, const char *root, const char *yaml_d
         }
 
         if(!named_root || !strlen(named_root)) cpswPutRoot(theRoot);
-        else                                   cpswPutNamedRoot(theRoot, named_root);
+        else {
+            if(!dev_file_path) cpswPutNamedRoot(theRoot, named_root);
+            else               cpswPutNamedRootwithDesc(theRoot, (const char *) dev_file_path, named_root);
+        }
         
     } catch (CPSWError &e) {
         fprintf(stderr, "Unable to load YAML file: %s\n", e.getInfo().c_str());
