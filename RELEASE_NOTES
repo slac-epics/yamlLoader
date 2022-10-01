@@ -1,3 +1,6 @@
+R2.3.1         Sep 30, 2022
+               Add support for rhel7 
+
 R2.3.0         July 18, 2022
                Add a new API to expose device file path for MemDev (using for PCIe TPR)
 
