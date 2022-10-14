@@ -1,3 +1,7 @@
+R2.3.2      2022-10-14 Bruce Hill
+            Building both LCLS and PCDS versions using LCLS PACKAGE_SITE_TOP.
+            Added some tests for valid PACKAGE path macros
+
 R2.3.1         Sep 30, 2022
                Add support for rhel7 
 
