@@ -134,7 +134,7 @@ void cpswPutRoot(Path root)
 
     char name[80];
     sprintf(name, "root_%d", ellCount(pRootList));
-    rootList_t *p = (rootList_t*) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
+    rootList_t* p = new rootList_t;
     p->name = epicsStrDup(name);
     p->root = root;
     p->description = NULL;
@@ -148,7 +148,7 @@ void cpswPutNamedRoot(Path root, const char *name)
 {
     init_rootList();
 
-    rootList_t *p = (rootList_t *) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
+    rootList_t* p = new rootList_t;
     p->name = epicsStrDup(name);
     p->root = root;
     p->description = NULL;
