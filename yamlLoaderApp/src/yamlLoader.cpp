@@ -128,13 +128,22 @@ char* cpswGetDescofNamedRoot(const char *name)
     return (char*) NULL;
 }
 
+/* Same behavior as mallocMustSucceed error reporting */
+static void checkAlloc(void* ptr, const char* message)
+{
+	if (!ptr)
+		cantProceed("%s\n", message);
+}
+
 void cpswPutRoot(Path root)
 {
     init_rootList();
 
     char name[80];
     sprintf(name, "root_%d", ellCount(pRootList));
-    rootList_t *p = (rootList_t*) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
+    rootList_t *p = new rootList_t;
+	checkAlloc(p, "Root List in yamlLoader driver");
+	assert(p);
     p->name = epicsStrDup(name);
     p->root = root;
     p->description = NULL;
@@ -148,7 +157,8 @@ void cpswPutNamedRoot(Path root, const char *name)
 {
     init_rootList();
 
-    rootList_t *p = (rootList_t *) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
+    rootList_t *p = new rootList_t;
+	checkAlloc(p, "Root List in yamlLoader driver");
     p->name = epicsStrDup(name);
     p->root = root;
     p->description = NULL;
@@ -161,7 +171,8 @@ void cpswPutNamedRootwithDesc(Path root, const char *desc, const char *name)
 {
     init_rootList();
 
-    rootList_t *p = (rootList_t *) mallocMustSucceed(sizeof(rootList_t), "Root List in yamlLoader driver");
+    rootList_t *p = new rootList_t;
+	checkAlloc(p, "Root List in yamlLoader driver");
     p->name = epicsStrDup(name);
     p->root = root;
     p->description = epicsStrDup(desc);
@@ -437,6 +448,5 @@ static int yamlLoaderInitialize(void)
 {
     return 0;
 }
-                                                    
 
 } /* extern "C" */
