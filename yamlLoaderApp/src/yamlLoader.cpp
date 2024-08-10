@@ -237,7 +237,7 @@ int cpswLoadConfigFile(const char *yaml_file, const char *prefix, const char *ya
     if(!pre) {
         throw InternalError("cpswLoadConfigFile: should have a Path object here!");
     }
-    
+
     return pre->loadConfigFromYamlFile(yaml_file, yaml_dir);
 }
 
@@ -300,12 +300,21 @@ static void loadYamlCallFunc(const iocshArgBuf *args)
         return;
     }
 
-    cpswLoadYamlFile((args[0].sval && strlen(args[0].sval))? args[0].sval : NULL, 
+    int result = -1;
+	try {
+		result = cpswLoadYamlFile((args[0].sval && strlen(args[0].sval))? args[0].sval : NULL, 
                      (args[1].sval && strlen(args[1].sval))? args[1].sval : NULL, 
                      (args[2].sval && strlen(args[2].sval))? args[2].sval : NULL, 
                      (args[3].sval && strlen(args[3].sval))? args[3].sval : NULL,
                      (args[4].sval && strlen(args[4].sval))? args[4].sval : NULL);
-    
+	}
+	catch(std::exception& e) {
+		printf("Error while loading YAML: %s\n", e.what());
+	}
+	catch(...) {
+		printf("Unknown error while loading YAML file\n");
+	}
+	iocshSetError(result);
 }
 
 
@@ -328,10 +337,20 @@ static void loadConfigCallFunc(const iocshArgBuf *args)
         return;
     }
     
-    cpswLoadConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
+	int result = -1;
+	try {
+    	result = cpswLoadConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
                        (args[1].sval && strlen(args[1].sval)) ? args[1].sval : NULL, 
                        (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL,
                        (args[3].sval && strlen(args[3].sval)) ? args[3].sval : NULL);
+	}
+	catch(std::exception& e) {
+		printf("Error while loading CONFIG file: %s\n", e.what());
+	}
+	catch(...) {
+		printf("Unknown error while loading CONFIG file\n");
+	}
+	iocshSetError(result);
 }
 
 static const iocshArg dumpConfigArg0 = {"DUMP YAML file (NOT hierarch YAML!)",                                  iocshArgString};
@@ -355,10 +374,21 @@ static void dumpConfigCallFunc(const iocshArgBuf *args)
         return;
     }
     
-    cpswDumpConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
+	int result = -1;
+	try {
+    	result = cpswDumpConfigFile((args[0].sval && strlen(args[0].sval)) ? args[0].sval : NULL, 
                        (args[1].sval && strlen(args[1].sval)) ? args[1].sval : NULL, 
                        (args[2].sval && strlen(args[2].sval)) ? args[2].sval : NULL,
                        (args[3].sval && strlen(args[3].sval)) ? args[3].sval : NULL);
+	}
+	catch(std::exception& e) {
+		printf("Internal error encountered while dumping YAML: %s\n", e.what());
+	}
+	catch(...) {
+		printf("Unknown error while dumping CONFIG file\n");
+	}
+
+	iocshSetError(result);
 } 
 
 static void yamlLoaderRegister(void)
